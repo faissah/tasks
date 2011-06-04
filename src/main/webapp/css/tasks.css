@@ -1,0 +1,52 @@
+#tasklist .hidden {
+	display:none;
+}
+#tasklist .taskFormConsult label.left {
+padding:0;
+}
+#tasklist .tableTasks caption{
+	display:none
+}
+#tasklist div.listEditToolbar {
+	margin-bottom:0px !important;
+}
+/******************************************************************************
+*  Add  tasks Form
+******************************************************************************/
+#tasklist .taskForm input[type="text"], #tasklist .taskForm textarea {
+	width:50%;
+}
+/******************************************************************************
+*  Form comments
+******************************************************************************/
+#tasklist td.tdTaskComments{
+	background:#FFFFCC url(img/tdtaskcomments-bg.png) repeat scroll right top;
+	padding:24px !important;
+	padding-top:10px;
+	font-size:1.17em
+}
+
+#tasklist .Form-tasksComments p {
+	padding:0;
+	margin:0 0 0.2em 0;
+}
+#tasklist .Form-tasksComments input.field, #tasklist .Form-tasksComments textarea {
+	width:98%;
+	clear:both
+}
+/******************************************************************************
+*  Taskscomments
+******************************************************************************/
+#tasklist form.Form-tasksComments{
+	padding-top:10px;
+}
+#tasklist p.TasksComment{
+	font-weight:normal;
+	padding:0;
+	line-height:1.85em;
+}
+#tasklist .TasksCommentDate{
+	font-size:0.8em;
+	font-weight:normal;
+	color: #666666
+}

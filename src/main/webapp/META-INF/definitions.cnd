@@ -1,0 +1,19 @@
+<jnt = 'http://www.jahia.org/jahia/nt/1.0'>
+
+[jnt:task] > jnt:content, mix:title
+ - assignee (weakreference, choicelist[users]) < jnt:user
+ - description (string)
+ - priority (string, choicelist[resourceBundle]) = 'medium' analyzer='keyword' < 'very_low', 'low', 'medium', 'high', 'very_high'
+ - dueDate (date, datepicker) = now('1000*60*60*24')
+ - state (string, choicelist[resourceBundle]) = 'active' analyzer='keyword' < 'active', 'finished', 'suspended', 'cancelled'
+ - type (string)
+
+[jnt:tasks] > jnt:content, mix:title, jmix:formContent
+ orderable
+ + * (jnt:task)
+
+
+[jnt:currentUserTasks] > jnt:content, jmix:userProfileComponents, jmix:bindedComponent, jmix:studioOnly
+ - viewUserTasks (boolean)
+ - viewWorkflowTasks (boolean)
+ - workflowTypes (string, choicelist[workflow]) multiple
