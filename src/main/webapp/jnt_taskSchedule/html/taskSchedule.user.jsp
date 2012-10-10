@@ -6,7 +6,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="functions" uri="http://www.jahia.org/tags/functions" %>
 <%@ taglib prefix="query" uri="http://www.jahia.org/tags/queryLib" %>
-<%@ taglib prefix="ui" uri="http://www.jahia.org/tags/uiComponentsLib" %>
 <%@ taglib prefix="uiComponents" uri="http://www.jahia.org/tags/uiComponentsLib" %>
 <%@ taglib prefix="workflow" uri="http://www.jahia.org/tags/workflow" %>
 
@@ -47,32 +46,31 @@ This resources are needed by the ajax loaded content
 
         <c:set value="" var="todayDisplayed" scope="request"/>
         <query:definition var="listQuery"
-                          statement="select * from [jnt:task] as t where [type] = '${taskType}' and [jcr:createdBy] = '${user}' and [dueDate] is not null order by [dueDate]"/>
+                          statement="select * from [jnt:task] as t where [type] = '${taskType}' and [jcr:createdBy] = '${functions:sqlencode(user)}' and [dueDate] is not null order by [dueDate]"/>
         <jcr:jqom var="result" qomBeanName="listQuery"/>
 
         <jsp:useBean id="now" class="java.util.Date"/>
         <jsp:useBean id="workflowTaskList" class="java.util.LinkedHashMap"/>
-        <ul class="planningtasks">
-            <li class="planningtask now" date="${now.time}">
-                today
+        <c:set var="emptyTasks" value="true"/>
+        <ul class="scheduletasks">
+            <li class="scheduletask now" date="${now.time}">
+                <fmt:message key="label.upcoming" />
             </li>
             <c:forEach items="${result.nodes}" var="task">
-                <c:choose>
-                    <c:when test="${task.properties['state'].string eq 'finished'}">
-                        <li class="planningtask finishedTask" date="${task.properties['dueDate'].date.time.time}">
-                <span class="date value"><fmt:formatDate value="${task.properties['dueDate'].date.time}"
-                                                    pattern="dd/MM/yyyy"/></span>
+                <c:set var="emptyTasks" value="false"/>
+                <li class="${task.properties['type'].string} scheduletask ${task.properties['state'].string eq 'finished' ? 'finishedTask' : 'unfinishedTask'}" date="${task.properties['dueDate'].date.time.time}">
+                    <span class="date value"><fmt:formatDate value="${task.properties['dueDate'].date.time}"
+                                                             pattern="dd/MM/yyyy"/></span>
+                    <c:set value="${jcr:findDisplayableNode(task, renderContext)}" var="displayableNode"/>
+                    <c:choose>
+                        <c:when test="${displayableNode.path ne renderContext.mainResource.node.path}">
+                            <span class="value"><a href="${url.base}${displayableNode.path}.html">${task.properties['jcr:title'].string}</a></span>
+                        </c:when>
+                        <c:otherwise>
                             <span class="value">${task.properties['jcr:title'].string}</span>
-                        </li>
-                    </c:when>
-                    <c:otherwise>
-                        <li class="planningtask unfinishedTask" date="${task.properties['dueDate'].date.time.time}">
-                <span class="date value"><fmt:formatDate value="${task.properties['dueDate'].date.time}"
-                                                    pattern="dd/MM/yyyy"/></span>
-                            <span class="value">${task.properties['jcr:title'].string}</span>
-                        </li>
-                    </c:otherwise>
-                </c:choose>
+                        </c:otherwise>
+                    </c:choose>
+                </li>
             </c:forEach>
             <query:definition var="listQuery"
                               statement="select * from [docmix:docspace]"/>
@@ -96,7 +94,8 @@ This resources are needed by the ajax loaded content
                         <fmt:formatDate pattern="dd/MM/yyyy"
                                         value="${task.dueDate}"
                                         var="endDate"/>
-                        <li class="planningtask unfinishedTask" date="${task.dueDate.time}">
+                        <c:set var="emptyTasks" value="false"/>
+                        <li class="scheduletask workflowtask unfinishedTask" date="${task.dueDate.time}">
                             <span class="value">${endDate}</span>
                             <span class="value">${task.displayName} - ${node.name}</span>
                             <template:module node="${node}" view="workflowMonitor" editable="false">
@@ -108,12 +107,14 @@ This resources are needed by the ajax loaded content
                     </c:forEach>
                 </c:if>
             </c:forEach>
-
+            <c:if test="${emptyTasks}">
+                <li class="scheduleTasks"><span class=value><fmt:message key="label.upcoming.no.tasks" /></span></li>
+            </c:if>
 
         </ul>
         <script>
             $(document).ready(function () {
-                $('.planningtask').sortElements(function (a, b) {
+                $('.scheduletask').sortElements(function (a, b) {
                     return $(a).attr('date') > $(b).attr('date') ? 1 : -1;
                 });
             });
