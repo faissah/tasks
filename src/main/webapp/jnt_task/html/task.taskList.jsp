@@ -89,33 +89,14 @@
     </form>
 </template:tokenizedForm>
 <ul class="taskactionslist">
-    <c:set var="assignable" value="true"/>
-    <c:if test="${not empty currentNode.properties['candidates'] and currentNode.properties['assigneeUserKey'].string ne currentUser.name}">
-        <c:set var="assignable" value="false"/>
-        <c:set var="candidates" value=""/>
-        <c:forEach items="${currentNode.properties['candidates']}" var="candidate">
-            <c:set var="candidates" value=" ${candidate.string} ${candidates} "/>
-        </c:forEach>
-        <c:set var="userKey" value="u:${currentUser.name}"/>
-        <c:if test="${fn:contains(candidates, userKey)}">
-            <c:set var="assignable" value="true"/>
-        </c:if>
-        <c:if test="${not assignable}">
-            <c:set var="groups" value="${user:getUserMembership(currentUser)}"/>
-            <c:forEach items="${groups}" var="x">
-                <c:if test="${fn:contains(candidates, x.key)}">
-                    <c:set var="assignable" value="true"/>
-                </c:if>
-            </c:forEach>
-        </c:if>
-    </c:if>
+    <c:set var="isAssignee" value="${currentNode.properties['assigneeUserKey'].string eq user.name}"/>
     <c:choose>
-        <c:when test="${currentNode.properties.state.string == 'active' and currentNode.properties['assigneeUserKey'].string ne currentUser.name and assignable eq 'true'}">
+        <c:when test="${currentNode.properties.state.string == 'active' and not isAssignee and user:isAssignable(currentNode)}">
             <li><a class="taskaction taskaction-assign"
                    href="javascript:sendNewAssignee('${currentNode.identifier}','${currentNode.path}','${currentUser.name}','${reloadurl}')"
                    title="assign to me"><fmt:message key="label.actions.assigneToMe"/></a></li>
         </c:when>
-        <c:when test="${currentNode.properties.state.string == 'active' and currentNode.properties['assigneeUserKey'].string eq currentUser.name}">
+        <c:when test="${currentNode.properties.state.string == 'active' and isAssignee}">
             <li><a class="taskaction taskaction-refuse"
                    href="javascript:sendNewAssignee('${currentNode.identifier}','${currentNode.path}','','${reloadurl}')"
                    title="Refuse"><fmt:message key="label.actions.refuse"/></a></li>
@@ -123,7 +104,7 @@
                    href="javascript:sendNewStatus('${currentNode.identifier}','${currentNode.path}','started',null,'${reloadurl}')"
                    title="start"><fmt:message key="label.actions.start"/></a></li>
         </c:when>
-        <c:when test="${currentNode.properties.state.string == 'started' and currentNode.properties['assigneeUserKey'].string eq currentUser.name}">
+        <c:when test="${currentNode.properties.state.string == 'started' and isAssignee}">
             <li><a class="taskaction taskaction-refuse"
                    href="javascript:sendNewAssignee('${currentNode.identifier}','${currentNode.path}','','${reloadurl}')"
                    title="Refuse"><fmt:message key="label.actions.refuse"/></a></li>
@@ -169,7 +150,7 @@
                         key="label.actions.completed"/></div>
             </li>
         </c:when>
-        <c:when test="${currentNode.properties.state.string == 'suspended' and currentNode.properties['assigneeUserKey'].string eq currentUser.name}">
+        <c:when test="${currentNode.properties.state.string == 'suspended' and isAssignee}">
             <li><a class="taskaction taskaction-refuse"
                    href="javascript:sendNewAssignee('${currentNode.identifier}','${currentNode.path}','','${reloadurl}')"
                    title="Refuse"><fmt:message key="label.actions.refuse"/></a></li>

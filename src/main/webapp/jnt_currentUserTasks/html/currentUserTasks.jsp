@@ -175,35 +175,16 @@
                                 </form>
                             </template:tokenizedForm>
                             <ul class="taskactionslist">
-                                <c:set var="assignable" value="true" />
-                                <c:if test="${not empty task.properties['candidates'] and task.properties['assigneeUserKey'].string ne user.name}">
-                                    <c:set var="assignable" value="false" />
-                                    <c:set var="candidates" value=""/>
-                                    <c:forEach items="${task.properties['candidates']}" var="candidate">
-                                        <c:set var="candidates" value=" ${candidate.string} ${candidates} "/>
-                                    </c:forEach>
-                                    <c:set var="userKey" value="u:${user.name}" />
-                                    <c:if test="${fn:contains(candidates, userKey)}">
-                                        <c:set var="assignable" value="true" />
-                                    </c:if>
-                                    <c:if test="${not assignable}">
-                                        <c:set var="groups" value="${user:getUserMembership(user)}" />
-                                        <c:forEach items="${groups}" var="x">
-                                            <c:if test="${fn:contains(candidates, x.key)}">
-                                                <c:set var="assignable" value="true" />
-                                            </c:if>
-                                        </c:forEach>
-                                    </c:if>
-                                </c:if>
+                                <c:set var="isAssignee" value="${task.properties['assigneeUserKey'].string eq user.name}"/>
                                 <c:choose>
-                                    <c:when test="${task.properties.state.string == 'active' and task.properties['assigneeUserKey'].string ne user.name and assignable eq 'true'}">
+                                    <c:when test="${task.properties.state.string == 'active' and not isAssignee and user:isAssignable(task)}">
                                         <li><a class="taskaction taskaction-assign" href="javascript:sendNewAssignee('${task.identifier}','${task.path}','${user.name}')" title="assign to me"><fmt:message key="label.actions.assigneToMe"/></a></li>
                                     </c:when>
-                                    <c:when test="${task.properties.state.string == 'active' and task.properties['assigneeUserKey'].string eq user.name}">
+                                    <c:when test="${task.properties.state.string == 'active' and isAssignee}">
                                         <li><a class="taskaction taskaction-refuse" href="javascript:sendNewAssignee('${task.identifier}','${task.path}','')" title="Refuse"><fmt:message key="label.actions.refuse"/></a></li>
                                         <li><a class="taskaction taskaction-start" href="javascript:sendNewStatus('${task.identifier}','${task.path}','started')" title="start"><fmt:message key="label.actions.start"/></a></li>
                                     </c:when>
-                                    <c:when test="${task.properties.state.string == 'started' and task.properties['assigneeUserKey'].string eq user.name}">
+                                    <c:when test="${task.properties.state.string == 'started' and isAssignee}">
                                         <li><a class="taskaction taskaction-refuse" href="javascript:sendNewAssignee('${task.identifier}','${task.path}','')" title="Refuse"><fmt:message key="label.actions.refuse"/></a></li>
                                         <li><a class="taskaction taskaction-suspend" href="javascript:sendNewStatus('${task.identifier}','${task.path}','suspended')" title="suspend"><fmt:message key="label.actions.suspend"/></a></li>
                                         <fmt:setBundle basename="${task.properties['taskBundle'].string}" var="taskBundle"/>
@@ -233,7 +214,7 @@
                                     <c:when test="${task.properties.state.string == 'finished'}">
                                         <li><div class="taskaction-complete"><input name="Completed" type="checkbox" disabled="disabled" checked="checked" value="Completed" />&nbsp;<fmt:message key="label.actions.completed"/></div></li>
                                     </c:when>
-                                    <c:when test="${task.properties.state.string == 'suspended' and task.properties['assigneeUserKey'].string eq user.name}">
+                                    <c:when test="${task.properties.state.string == 'suspended' and isAssignee}">
                                         <li><a class="taskaction taskaction-refuse" href="javascript:sendNewAssignee('${task.identifier}','${task.path}','')" title="Refuse"><fmt:message key="label.actions.refuse"/></a></li>
                                         <li><a class="taskaction taskaction-continue" href="javascript:sendNewStatus('${task.identifier}','${task.path}','started')" title="start"><fmt:message key="label.actions.resume"/></a></li>
                                     </c:when>
