@@ -155,6 +155,7 @@
 
             <tbody>
             <c:forEach items="${moduleMap.currentList}"  var="task" varStatus="status" begin="${moduleMap.begin}" end="${moduleMap.end}">
+                <c:set var="taskStatus" value="${task.properties.state.string}"/>
                 <tr class="${status.count % 2 == 0 ? 'odd' : 'even'}">
                     <td headers="Title">
                         <span class="icon-task icon-task-${task.properties['priority'].string}"></span>&nbsp;<span class="opentask" onclick="switchTaskDisplay('${task.identifier}')">${fn:escapeXml(task.displayableName)}</span>
@@ -177,14 +178,14 @@
                             <ul class="taskactionslist">
                                 <c:set var="isAssignee" value="${task.properties['assigneeUserKey'].string eq user.name}"/>
                                 <c:choose>
-                                    <c:when test="${task.properties.state.string == 'active' and not isAssignee and user:isAssignable(task)}">
+                                    <c:when test="${taskStatus == 'active' and not isAssignee and user:isAssignable(task)}">
                                         <li><a class="taskaction taskaction-assign" href="javascript:sendNewAssignee('${task.identifier}','${task.path}','${user.name}')" title="assign to me"><fmt:message key="label.actions.assigneToMe"/></a></li>
                                     </c:when>
-                                    <c:when test="${task.properties.state.string == 'active' and isAssignee}">
+                                    <c:when test="${taskStatus == 'active' and isAssignee}">
                                         <li><a class="taskaction taskaction-refuse" href="javascript:sendNewAssignee('${task.identifier}','${task.path}','')" title="Refuse"><fmt:message key="label.actions.refuse"/></a></li>
                                         <li><a class="taskaction taskaction-start" href="javascript:sendNewStatus('${task.identifier}','${task.path}','started')" title="start"><fmt:message key="label.actions.start"/></a></li>
                                     </c:when>
-                                    <c:when test="${task.properties.state.string == 'started' and isAssignee}">
+                                    <c:when test="${taskStatus == 'started' and isAssignee}">
                                         <li><a class="taskaction taskaction-refuse" href="javascript:sendNewAssignee('${task.identifier}','${task.path}','')" title="Refuse"><fmt:message key="label.actions.refuse"/></a></li>
                                         <li><a class="taskaction taskaction-suspend" href="javascript:sendNewStatus('${task.identifier}','${task.path}','suspended')" title="suspend"><fmt:message key="label.actions.suspend"/></a></li>
                                         <fmt:setBundle basename="${task.properties['taskBundle'].string}" var="taskBundle"/>
@@ -211,14 +212,14 @@
                                             <template:module path="${task.path}/taskData" view="contribute.edit" />
                                         </c:if>
                                     </c:when>
-                                    <c:when test="${task.properties.state.string == 'finished'}">
+                                    <c:when test="${taskStatus == 'finished'}">
                                         <li><div class="taskaction-complete"><input name="Completed" type="checkbox" disabled="disabled" checked="checked" value="Completed" />&nbsp;<fmt:message key="label.actions.completed"/></div></li>
                                     </c:when>
-                                    <c:when test="${task.properties.state.string == 'suspended' and isAssignee}">
+                                    <c:when test="${taskStatus == 'suspended' and isAssignee}">
                                         <li><a class="taskaction taskaction-refuse" href="javascript:sendNewAssignee('${task.identifier}','${task.path}','')" title="Refuse"><fmt:message key="label.actions.refuse"/></a></li>
                                         <li><a class="taskaction taskaction-continue" href="javascript:sendNewStatus('${task.identifier}','${task.path}','started')" title="start"><fmt:message key="label.actions.resume"/></a></li>
                                     </c:when>
-                                    <c:when test="${task.properties.state.string == 'canceled'}">
+                                    <c:when test="${taskStatus == 'canceled'}">
                                     </c:when>
                                 </c:choose>
                                 <c:if test="${not empty task.properties['dueDate']}"><li><a class="taskaction taskaction-iCalendar" href="<c:url value='${url.base}${task.path}.ics'/>" title="iCalendar"><fmt:message key="label.actions.icalendar"/></a></li></c:if>
@@ -228,7 +229,7 @@
                     <c:if test="${dispAssignee}"><td headers="Assigned">${task.properties['assigneeUserKey'].string}</td></c:if>
                     <c:if test="${dispCreator}"><td headers="CreatedBy">${task.properties['jcr:createdBy'].string}</td></c:if>
                     <c:if test="${dispState}"><td class="center" headers="State">
-                        <span class="task-status task-status-${task.properties.state.string}"><fmt:message key="jnt_task.state.${task.properties.state.string}"/></span>
+                        <span class="task-status task-status-${taskStatus}"><fmt:message key="jnt_task.state.${taskStatus}"/></span>
 
                     </td></c:if>
                     <c:choose>
