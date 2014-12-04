@@ -89,7 +89,7 @@
     </form>
 </template:tokenizedForm>
 <ul class="taskactionslist">
-    <c:set var="isAssignee" value="${currentNode.properties['assigneeUserKey'].string eq user.name}"/>
+    <c:set var="isAssignee" value="${currentNode.properties['assigneeUserKey'].string eq user}"/>
     <c:choose>
         <c:when test="${currentNode.properties.state.string == 'active' and not isAssignee and user:isAssignable(currentNode)}">
             <li><a class="taskaction taskaction-assign"
