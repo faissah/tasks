@@ -157,8 +157,8 @@
         </td>
         <c:if test="${dispAssignee}">
             <td headers="Assigned">
-                <c:if test="${not empty currentNode.properties['assigneeUserKey'].string}">
-                    <jcr:node var="assigneeNode" path="${currentNode.properties['assigneeUserKey'].string}"/>
+                <c:if test="${not empty task.properties['assigneeUserKey'].string}">
+                    <jcr:node var="assigneeNode" path="${task.properties['assigneeUserKey'].string}"/>
                     ${assigneeNode.name}
                 </c:if>
             </td>
