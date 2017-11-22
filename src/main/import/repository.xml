@@ -54,6 +54,37 @@
                         </pagecontent>
                     </tasks>
                 </dashboard-modules-base>
+                <dashboard-modules-base-jahia-anthracite j:view="settingsBootstrap3GoogleMaterialStyle"
+                                        jcr:mixinTypes="jmix:useUILocale"
+                                        jcr:primaryType="jnt:template">
+                    <tasks-jahia-anthracite j:applyOn="jnt:user"
+                           j:defaultTemplate="false"
+                           j:hiddenTemplate="false"
+                           j:icon="/modules/tasks/templates/files/checkbox.png"
+                           j:requireLoggedUser="false"
+                           j:requirePrivilegedUser="true"
+                           j:titleKey="system.myTasks"
+                           jcr:mixinTypes="jmix:rbTitle"
+                           jcr:primaryType="jnt:contentTemplate">
+                        <pagecontent jcr:primaryType="jnt:contentList">
+                            <my-tasks-jahia-anthracite jcr:primaryType="jnt:contentList">
+                                <j:translation_en jcr:language="en"
+                                                  jcr:mixinTypes="mix:title"
+                                                  jcr:primaryType="jnt:translation"
+                                                  jcr:title="##resourceBundle(system.myTasks)##"/>
+                                <currentUserTasks displayAssignee="true"
+                                                  displayCreator="true"
+                                                  displayState="true"
+                                                  filterOnAssignee="assignedToMeOrUnassigned"
+                                                  filterOnStates="active started suspended"
+                                                  j:view="settingsBootstrap3GoogleMaterialStyle"
+                                                  jcr:mixinTypes="jmix:renderable"
+                                                  jcr:primaryType="jnt:currentUserTasks"
+                                                  sortBy="jcr:created"/>
+                            </my-tasks-jahia-anthracite>
+                        </pagecontent>
+                    </tasks-jahia-anthracite>
+                </dashboard-modules-base-jahia-anthracite>
             </templates>
 
         </tasks>
