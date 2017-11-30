@@ -187,7 +187,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <%@include file="userTasksTableRow.settingsBootstrap3GoogleMaterialStyle.jsp" %>
+                            <%@include file="userTasksTableRow.settingsBootstrap3GoogleMaterialStyle.jspf" %>
                             </tbody>
                         </table>
                     </fieldset>
