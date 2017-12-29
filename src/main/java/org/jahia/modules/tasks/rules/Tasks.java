@@ -50,6 +50,7 @@ import org.jahia.exceptions.JahiaException;
 import org.jahia.registries.ServicesRegistry;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRPropertyWrapper;
+import org.jahia.services.content.JCRSessionFactory;
 import org.jahia.services.content.decorator.JCRGroupNode;
 import org.jahia.services.content.decorator.JCRUserNode;
 import org.jahia.services.content.rules.AddedNodeFact;
@@ -57,6 +58,7 @@ import org.jahia.services.sites.JahiaSite;
 import org.jahia.services.tasks.Task;
 import org.jahia.services.tasks.TaskService;
 import org.jahia.services.usermanager.JahiaUser;
+import org.jahia.services.usermanager.JahiaUserManagerService;
 import org.jahia.services.workflow.WorkflowService;
 import org.jahia.services.workflow.WorkflowVariable;
 import org.slf4j.Logger;
@@ -155,7 +157,11 @@ public class Tasks {
             JCRNodeWrapper jcrNodeWrapper = node.getNode();
             String taskId = jcrNodeWrapper.getProperty("taskId").getString();
             String provider = jcrNodeWrapper.getProperty("provider").getString();
+            JahiaUser realCurrentUser = node.getSession().getUser();
+            JahiaUser root = JahiaUserManagerService.getInstance().lookupUserByPath("/users/root").getJahiaUser();
+            JCRSessionFactory.getInstance().setCurrentUser(root);
             WorkflowService.getInstance().assignTask(taskId, provider, user != null ? user.getJahiaUser() : null);
+            JCRSessionFactory.getInstance().setCurrentUser(realCurrentUser);
         } catch (RepositoryException e) {
             logger.error("cannot assign task", e);
         }
